@@ -1,27 +1,10 @@
 FROM alpine:3.6
 
-RUN apk add --no-cache bash \
-						binutils \
-						bison \
-						bzip2 \
-						coreutils \
-						diffutils \
-						findutils \
-						gawk \
-						gcc \
-						grep \
-						gzip \
-						m4 \
-						make \
-						ld \
-						openssl-dev \
-						patch \
-						perl \
-						sed \
-						tar \
-						texinfo \
-						wget \
-						xz
+ARG jobs=4
+
+RUN apk add --no-cache bash binutils bison bzip2 coreutils diffutils
+RUN apk add --no-cache findutils gawk gcc grep gzip m4 make openssl libc-dev python-dev gcc
+RUN apk add --no-cache openssl-dev patch perl sed tar texinfo wget xz
 
 WORKDIR /lfs/sources
 
@@ -41,6 +24,11 @@ RUN ../configure --prefix=/tools            \
              --disable-nls              \
              --disable-werror
 
-RUN make -j4
+RUN make -j$jobs
+
+RUN case $(uname -m) in \
+  x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;;\
+esac
+
 RUN make install
 CMD ["/bin/bash"]
