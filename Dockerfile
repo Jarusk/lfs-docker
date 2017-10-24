@@ -2,13 +2,15 @@ FROM alpine:3.6
 
 #USER lfs
 ARG jobs=4
-ENV LFS_TGT=x86_64-lfs-linux-gnu
-ENV LFS=/lfs
 
 RUN apk add --no-cache bash binutils bison bzip2 coreutils diffutils
 RUN apk add --no-cache findutils gawk grep gzip m4 make openssl
 RUN apk add --no-cache libc-dev python-dev gcc g++ ca-certificates
 RUN apk add --no-cache openssl-dev patch perl sed tar texinfo wget xz
+
+ENV LFS_TGT=x86_64-lfs-linux-gnu
+ENV LFS=/lfs
+ENV PATH=/tools/bin:/bin:/usr/bin
 
 WORKDIR /lfs/sources
 
@@ -41,7 +43,7 @@ esac
 RUN make install
 WORKDIR /lfs/sources
 RUN rm -rf binutils-2.29/
-#################################################################
+
 
 #################################################################
 # GCC
@@ -91,6 +93,7 @@ RUN make install
 WORKDIR /lfs/sources
 RUN rm -rf gcc-7.2.0/
 
+
 #################################################################
 # Linux Headers
 #################################################################
@@ -105,7 +108,6 @@ RUN cp -rv dest/include/* /tools/include
 WORKDIR /lfs/sources
 RUN rm -rf linux-4.12.7
 
-#################################################################
 
 #################################################################
 # glibc
@@ -123,13 +125,12 @@ RUN ../configure                         \
       libc_cv_forced_unwind=yes          \
       libc_cv_c_cleanup=yes
 
-RUN make
+RUN make -j$jobs
 RUN make install
 
 WORKDIR /lfs/sources
 RUN rm -rf glibc-2.26
 
-#################################################################
 
 
 # All done
