@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.8
 
 #USER lfs
 ARG jobs=4
@@ -17,7 +17,7 @@ WORKDIR /lfs/sources
 RUN mkdir /lfs/tools
 RUN ln -s /lfs/tools /
 
-RUN wget -O wget-list http://www.linuxfromscratch.org/lfs/downloads/8.1-systemd/wget-list
+RUN wget -O wget-list http://www.linuxfromscratch.org/lfs/downloads/8.4/wget-list
 RUN wget --input-file=wget-list
 
 #################################################################
